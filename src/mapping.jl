@@ -72,10 +72,10 @@ combine_month(years) = begin
     for year in years
         for i in CartesianIndices(year)
             for month in 1:12
-                val = if ismissing(year[i]) || ismissing(year[i][month]) 
+                val = if ismissing(year[i]) || ismissing(year[i][month])
                     missing
                 else
-                    val = ustrip(year[i][month][:VS])
+                    ustrip(state_component(year[i][month], :VS))
                 end
                 out[month][i] = max(out[month][i], val)
             end
@@ -88,10 +88,10 @@ extract_months(year) = begin
     out = [zeros(Float64, size(year)...) for x in 1:12]
     for i in CartesianIndices(year)
         for month in 1:12
-            val = if ismissing(year[i]) || ismissing(year[i][2][month]) 
+            val = if ismissing(year[i]) || ismissing(year[i][2][month])
                 missing
             else
-                val = ustrip(year[i][2][month][:VS])
+                ustrip(state_component(year[i][2][month], :VS))
             end
             out[month][i] = max(out[month][i], val)
         end
@@ -99,7 +99,7 @@ extract_months(year) = begin
     out
 end
 
-sum_structural_mass(as) = maximum((ustrip.(A[:VS]) for A in as))
+sum_structural_mass(as) = maximum(ustrip(state_component(A, :VS)) for A in as)
 
 build_map(data, name, legend, lons, lats, t_lons, t_lats) = begin
     data = rotl90(data) 
