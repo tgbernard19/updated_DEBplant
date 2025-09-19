@@ -50,8 +50,10 @@ function plot_growth!(plt, model, u, envstart)
     tstop = LIFESPAN * 1.0hr
     prob = DiscreteProblem(model, u, (0.0hr, tstop))
     state = solve(prob, FunctionMap(scale_by_time = true))
-    shootvals = map(i -> state[ustrip(round(typeof(1hr), i))][:VS] * 25/mol, 1hr:1hr:tstop+1hr)
-    rootvals = map(i -> state[ustrip(round(typeof(1hr), i))][:VR] * -25/mol, 1hr:1hr:tstop+1hr)
+    shootvals = map(i -> state_component(state[ustrip(round(typeof(1hr), i))], :VS) * 25/mol,
+                    1hr:1hr:tstop+1hr)
+    rootvals = map(i -> state_component(state[ustrip(round(typeof(1hr), i))], :VR) * -25/mol,
+                   1hr:1hr:tstop+1hr)
     rng = envstart:1.0hr:envstart+tstop
     plot!(plt, rng, shootvals;
         linecolor=:black,
